@@ -1,0 +1,13 @@
+table#pattern-table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+#pattern-table td {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+div#control {
+  margin: 10px 0;
+}
