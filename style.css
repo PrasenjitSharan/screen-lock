@@ -11,3 +11,8 @@ table#pattern-table {
 div#control {
   margin: 10px 0;
 }
+
+div#control input {
+  margin: 0 5px;
+  padding: 5px;
+}

@@ -1,25 +1,25 @@
 var ScreenLockApp = (function() {
   var _lockPattern = [];
+  var _inputPattern = [];
+  var _setLockPattern = false;
 
   var setLockPattern = function(inputs) {
     // set array of objects to the lock pattern variable
     // Sample input
-    var p1 = new Point(0, 0);
-    var p2 = new Point(0, 1);
-    var p3 = new Point(0, 2);
-    var p4 = new Point(1, 0);
-    var p5 = new Point(1, 1);
-    var p6 = new Point(1, 2);
-    var p7 = new Point(2, 0);
-    var p8 = new Point(2, 1);
-    var p9 = new Point(2, 2);
-
     _lockPattern = [p1, p2, p3];
 
   }
 
+  var _resetLockPattern = function() {
+    _inputPattern = [];
+  };
+
   var _pushLockPattern = function(point) {
     _lockPattern.push(point);
+  };
+
+  var _pushInputPattern = function(point) {
+    _inputPattern.push(point);
   }
 
   var getLockPattern = function() {
@@ -28,44 +28,57 @@ var ScreenLockApp = (function() {
   }
 
   var validatePattern = function(input) {
-    // Sample input
-    var p1 = new Point(0, 0);
-    var p2 = new Point(0, 1);
-    var p3 = new Point(0, 2);
+    return Util.equalPointArrays(_lockPattern, _inputPattern);
+  };
 
-    var input = [p1, p2, p3];
+  var _setUpCellEventHandlers = function() {
+    var table = document.getElementById('pattern-table');
+      var rows = table.getElementsByTagName('tr');
 
-    return Util.equalPointArrays(_lockPattern, input);
+      for(var i = 0; i < rows.length; i++) {
+        var currentRow = rows[i];
+        var cells = currentRow.getElementsByTagName('td');
+        for(var j = 0; j < cells.length; j++) {
+          var createClickHandler = function(i, j) {
+            return function() {
+              var p = new Point(i, j);
+              if(_setLockPattern) {
+                _pushLockPattern(p);
+              } else {
+                _pushInputPattern(p);
+              }
+            }
+          }
+          cells[j].onclick = createClickHandler(i, j);
+        }
+      }
   };
 
   var _setUpEventHandlers = function() {
-    var table = document.getElementById('pattern-table');
-    var rows = table.getElementsByTagName('tr');
-
-    for(var i = 0; i < rows.length; i++) {
-      var currentRow = rows[i];
-      var cells = currentRow.getElementsByTagName('td');
-      for(var j = 0; j < cells.length; j++) {
-        var createClickHandler = function(i, j) {
-          return function() {
-            console.log(i + ' ' + j);
-            var p = new Point(i, j);
-            _pushLockPattern(p);
-          }
-        }
-        cells[j].onclick = createClickHandler(i, j);
-      }
-    }
+    _setUpCellEventHandlers();
 
     // Button
-    var button = document.getElementById('validatePattern');
-    button.addEventListener('click', function() {
+    var validateButton = document.getElementById('validate-pattern');
+    var setLockPatternButton = document.getElementById('set-pattern');
+    var resetLockPatternButton = document.getElementById('reset-pattern');
+
+    validateButton.addEventListener('click', function() {
+      _setLockPattern = false;
       if(validatePattern()) {
         console.log('Pass');
       } else {
         console.log('You shall not pass!');
       }
-    })
+    });
+
+    setLockPatternButton.addEventListener('click', function() {
+      _setLockPattern = true;
+    });
+
+    resetLockPatternButton.addEventListener('click', function() {
+      _setLockPattern = false;
+      _resetLockPattern();
+    });
   };
 
   var init = (function() {
@@ -73,9 +86,6 @@ var ScreenLockApp = (function() {
   })();
 
   return {
-    init: init,
-    setLockPattern: setLockPattern,
-    getLockPattern: getLockPattern,
-    validatePattern: validatePattern
+    init: init
   }
 })();
